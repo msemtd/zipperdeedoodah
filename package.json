@@ -1,0 +1,46 @@
+{
+  "name": "zipperdeedoodah",
+  "version": "0.0.1",
+  "description": "Simplified zip file handling using yazl & yauzl",
+  "author": "Michael Erskine (msemtd@googlemail.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/msemtd/zipperdeedoodah/issues"
+  },
+  "homepage": "https://github.com/msemtd/zipperdeedoodah#readme",
+  "keywords": [
+    "zip",
+    "yazl",
+    "yauzl",
+    "promises"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsdown"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/msemtd/zipperdeedoodah.git"
+  },
+  "volta": {
+    "node": "24.16.0"
+  },
+  "dependencies": {
+    "debug": "^4.4.3",
+    "fs-extra": "^11.3.5",
+    "yauzl": "^3.4.0",
+    "yazl": "^3.3.1"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.13",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^25.9.3",
+    "@types/yauzl": "^3.4.0",
+    "@types/yazl": "^3.3.1",
+    "mocha": "^11.3.0",
+    "tsdown": "^0.22.3",
+    "typescript": "^6.0.3"
+  }
+}
