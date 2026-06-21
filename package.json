@@ -18,7 +18,8 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsdown"
+    "build": "tsdown",
+    "test": "mocha tests/**/*.ts"
   },
   "repository": {
     "type": "git",
@@ -36,11 +37,13 @@
   "devDependencies": {
     "@types/debug": "^4.1.13",
     "@types/fs-extra": "^11.0.4",
+    "@types/mocha": "^10.0.10",
     "@types/node": "^25.9.3",
     "@types/yauzl": "^3.4.0",
     "@types/yazl": "^3.3.1",
     "mocha": "^11.3.0",
     "tsdown": "^0.22.3",
+    "tsx": "^4.22.4",
     "typescript": "^6.0.3"
   }
 }
