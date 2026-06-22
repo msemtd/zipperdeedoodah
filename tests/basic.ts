@@ -1,7 +1,7 @@
 import { it, describe } from 'mocha'
-
+import * as path from 'node:path'
 describe('readers', () => {
   it('should be able to list zip contents', async () => {
-    console.log("yo")
+    const td = path.join(__dirname, '..', 'test-data')
   })
 })

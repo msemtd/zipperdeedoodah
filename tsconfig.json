@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "strict": true,
+    "types": ["node"],
     "noImplicitAny": true,
     "esModuleInterop": true,
     "strictNullChecks": true,
