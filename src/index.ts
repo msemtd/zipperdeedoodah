@@ -16,7 +16,6 @@ export type ZipperEntry = {
 }
 
 export class ZipperDeeDooDah {
-
   public readonly zipFilePath: string
   zipFile: yauzl.ZipFile | null = null
 
@@ -93,15 +92,78 @@ export class ZipperDeeDooDah {
     })
   }
 
-  /*
-  static async zipDir (folderPath: string): Promise<void> {
+  /**
+   * Utility for recursing a dir
+   */
+  static async recurse (filePath: string, itemCallback: (itemPath: string, stats: fs.Stats) => void): Promise<void> {
+    const found = new Set<number>()
+    async function itemTest (itemPath: string): Promise<void> {
+      const stats = await fs.lstat(itemPath).catch(() => null)
+      if (!stats) { return }
+      if (!found.has(stats.ino)) {
+        found.add(stats.ino)
+        itemCallback(itemPath, stats)
+      }
+      if (stats.isDirectory()) {
+        const items = await fs.readdir(itemPath).catch(() => null)
+        if (!items) { return }
+        for (const item of items) {
+          await itemTest(path.join(itemPath, item))
+        }
+      }
+    }
+    await itemTest(filePath)
+  }
+
+  static async getSize (filePath: string) {
+    let total = 0
+    const cb = (itemPath: string, stats: fs.Stats) => { total += stats.size }
+    await ZipperDeeDooDah.recurse(filePath, cb)
+    return total
+  }
+
+  /**
+   * Utility for quick estimation of the size of a zipping job.
+   */
+  async getPathSize (filePath: string): Promise<number> {
+    let total = 0
+    const found = new Set<number>()
+    async function itemSize (itemPath: string): Promise<void> {
+      const stats = await fs.lstat(itemPath).catch(() => null)
+      if (!stats) { return }
+      if (!found.has(stats.ino)) {
+        found.add(stats.ino)
+        total += stats.size
+      }
+      if (stats.isDirectory()) {
+        const items = await fs.readdir(itemPath).catch(() => null)
+        if (!items) { return }
+        for (const item of items) {
+          await itemSize(path.join(itemPath, item))
+        }
+      }
+    }
+    await itemSize(filePath)
+    return total
+  }
+
+  /**
+   * Five star treatment by default!
+   * Get size first and have per file update of percent done
+   * @param filePath - file or dir to zip up
+   * @param options
+   */
+  async zipUp (filePath: string, options: any = { calcSize: true }): Promise<void> {
+    this.close()
+    const s = await fs.stat(filePath)
+    const total = await ZipperDeeDooDah.getSize(filePath)
     // Get info on all files in a directory, including subdirectories...
-    const ent = await fs.readdir(folderPath, { withFileTypes: true, recursive: true })
+    const ent = await fs.readdir(filePath, { withFileTypes: true, recursive: true })
     // no zip file arg provided, create zip in the same location as the folder with the same name
-    const { name, dir } = path.parse(folderPath)
+    const { name, dir } = path.parse(filePath)
     const zipFilePath = path.join(dir, `${name}.zip`)
     // get folder size - not currently needed but sets up expectations...
-    const size = await getFolderSize.loose(folderPath)
+    const size = total
     dbg(`The folder is approx ${size} bytes large`)
     dbg(`That is the same as ${(size / 1000 / 1000).toFixed(2)} MB`)
     // simplest possible yazl stream usage wrapped in a promise...
@@ -111,12 +173,12 @@ export class ZipperDeeDooDah {
       const zipOptions = { compress: false }
       for (const de of ent) {
         if (de.isFile()) {
-          const filePath = path.join(de.parentPath, de.name)
-          if (!filePath.startsWith(folderPath)) {
-            throw Error(`File path ${filePath} does not start with folder path ${folderPath}`)
+          const fp = path.join(de.parentPath, de.name)
+          if (!fp.startsWith(filePath)) {
+            throw Error(`File path ${fp} does not start with folder path ${filePath}`)
           }
-          const entryPath = path.relative(folderPath, filePath)
-          zipfile.addFile(filePath, entryPath, zipOptions)
+          const entryPath = path.relative(filePath, fp)
+          zipfile.addFile(fp, entryPath, zipOptions)
         } else if (de.isDirectory()) {
           const filePath = path.join(de.parentPath, de.name)
           dbg(`dir: ${filePath}`)
@@ -135,11 +197,4 @@ export class ZipperDeeDooDah {
     dbg(`Elapsed time: ${elapsed.toFixed(2)} seconds`)
     dbg('...done zip promise...')
   }
-  */
 }
-
-
-
-
-
-
