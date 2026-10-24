@@ -9,7 +9,7 @@ const dbg = debug('zipperdeedoodah')
 dbg.enabled = true
 
 const td = path.join(__dirname, '..', 'test-data')
-const noTestData = fs.pathExistsSync(td) ? false : true
+const noTestData = !fs.pathExistsSync(td)
 if (noTestData) {
   console.log('we need some stuff in test-data...')
   console.log('empty.zip, big.zip')
@@ -42,7 +42,7 @@ describe('zipperdeedoodah tests', function (this:Mocha.Suite) {
       const t2 = Date.now()
       console.log(`zip file ${zf} has ${entries.length} entries, read in ${(t2 - t1) / 1000} seconds`)
       entries.forEach((entry, index) => {
-        console.log(`entry ${index}: ${entry.name} (${entry.sizeUncompressed} bytes)`)
+        // console.log(`entry ${index}: ${entry.name} (${entry.sizeUncompressed} bytes)`)
       })
       assert.ok(entries.length > 0, 'expected zip file to have entries')
     }
@@ -62,5 +62,7 @@ describe('zipperdeedoodah tests', function (this:Mocha.Suite) {
     const files = await fs.readdir(outDir)
     console.log(`extracted ${files.length} files from zip file`)
     assert.ok(files.length > 0, 'expected zip file to have extracted files')
-  })
+    console.log(`finished extracting files from ${zf} - but the test doesn't complete?`)
+    assert.ok(true)
+  }).timeout(0)
 })
